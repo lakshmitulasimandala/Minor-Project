@@ -7,9 +7,17 @@ import crypto from "crypto";
 const REPORT_TYPES = [
   "Theft",
   "Fire Outbreak",
-  "Medical Emergency",
+  "Illegal Waste Dumping",
+  "Pothole",
+  "Uncollected Waste",
+  "Uneven Road",
+  "Unclosed Manhole",
+  "Electrical Hazard",
   "Natural Disaster",
-  "Violence",
+  "Road Block",
+  "Sewage Overflow",
+  "Streetlight Not Working",
+  "Exposed Wiring",
   "Other",
 ] as const;
 

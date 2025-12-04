@@ -30,7 +30,7 @@ export default function Navbar() {
                   </svg>
                 </div>
                 <span className="text-lg font-semibold text-white">
-                  Safer
+                  ZeroWasteX
                 </span>
               </Link>
             </div>
