@@ -59,6 +59,8 @@ export function ReportForm({ onComplete }: ReportFormProps) {
         reader.readAsDataURL(file);
       });
 
+      setImage(base64 as string);
+
       const response = await fetch("/api/analyze-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -74,7 +76,7 @@ export function ReportForm({ onComplete }: ReportFormProps) {
           description: data.description,
           specificType: data.reportType,
         }));
-        setImage(base64 as string);
+        //setImage(base64 as string);
       }
     } catch (error) {
       console.error("Error analyzing image:", error);
