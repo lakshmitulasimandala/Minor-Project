@@ -12,6 +12,7 @@ interface ReportDetails {
   title: string;
   description: string;
   location: string;
+  image?: string;
 }
 
 export function ReportTracker() {
@@ -192,6 +193,21 @@ export function ReportTracker() {
                       )}
                     </span>
                   </div>
+
+                  
+                  {reportDetails.image && (
+                    <div className="p-3 rounded-lg bg-white/5 space-y-1.5">
+                      <span className="text-zinc-400 text-sm">Image</span>
+                      <div className="w-full h-48 rounded-lg overflow-hidden border border-white/10">
+                        <img
+                          src={reportDetails.image}
+                          alt="Report Image"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  )}
+
 
                   <div className="p-3 rounded-lg bg-white/5 space-y-1.5">
                     <span className="text-zinc-400 text-sm">Title</span>

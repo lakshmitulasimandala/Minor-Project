@@ -35,7 +35,13 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       reportId: report.reportId,
-      message: "Report submitted successfully",
+      title: report.title,           // <-- add these
+      description: report.description,
+      location: report.location,
+      image: report.image,
+      createdAt: report.createdAt,
+      type: report.type,
+      specificType: report.reportType,
     });
   } catch (error) {
     console.error("Error creating report:", error);
