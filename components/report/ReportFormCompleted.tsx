@@ -69,7 +69,12 @@ export function ReportSubmitted({ data }: ReportSubmittedProps) {
       // Add Image (if present)
       if (imageBase64) {
         try {
-          // compute available width, keep some margins
+          // compute available width, keep some margins anthee
+          let base64Data = imageBase64;
+          if (imageBase64.includes(",")) {
+            base64Data = imageBase64.split(",")[1]; // <-- To Get only the base64 part
+          }
+
           const availableW = pageWidth - margin * 2;
           const imageMaxW = Math.min(availableW, 420);
           const imageX = margin;
@@ -78,8 +83,8 @@ export function ReportSubmitted({ data }: ReportSubmittedProps) {
           // We try to keep a decent height; if image is large it will be scaled
           const imageH = 140;
 
-          // imageBase64 may include data:mime; pass it directly
-          doc.addImage(imageBase64, "JPEG", imageX, imageY, imageMaxW, imageH);
+          // Pass the stripped base64 data (without data URL prefix)
+          doc.addImage(base64Data, "JPEG", imageX, imageY, imageMaxW, imageH);
           cursorY = imageY + imageH + 12;
         } catch (imgErr) {
           // fallback: ignore image if addImage fails
