@@ -27,27 +27,29 @@ export function LocationInput({
         throw new Error("Geolocation is not supported by your browser");
       }
 
-      const position: GeolocationPosition = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          resolve,
-          (error) => {
-            switch (error.code) {
-              case error.PERMISSION_DENIED:
-                reject(new Error("Please allow location access in your browser settings"));
-                break;
-              case error.POSITION_UNAVAILABLE:
-                reject(new Error("Location information is unavailable"));
-                break;
-              case error.TIMEOUT:
-                reject(new Error("Location request timed out"));
-                break;
-              default:
-                reject(new Error("An unknown error occurred"));
-            }
-          },
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-        );
+      const getPosition = (options: PositionOptions) =>
+      new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
       });
+
+      let position: GeolocationPosition;
+
+      try {
+        // First attempt (normal)
+        position = await getPosition({
+          enableHighAccuracy: false,
+          timeout: 15000,
+          maximumAge: 60000,
+        });
+      } catch {
+        // Fallback attempt (more relaxed)
+        position = await getPosition({
+          enableHighAccuracy: false,
+          timeout: 20000,
+          maximumAge: 300000,
+        });
+      }
+
 
       const { latitude, longitude } = position.coords;
       onCoordinatesChange?.(latitude, longitude);
