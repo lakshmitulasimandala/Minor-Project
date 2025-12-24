@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     if (!key) {
       // If we wanna prefer Nominatim (no key) uncomment and use that block below
       // const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
-      // const r = await fetch(nominatimUrl, { headers: { "User-Agent": "SafeReport/1.0" } });
+      // const r = await fetch(nominatimUrl, { headers: { "User-Agent": "Reportify/1.0" } });
       // const data = await r.json();
       // return NextResponse.json({ display_name: data.display_name || "", raw: data });
       // only make these changes when necessary bro ! if not ignore !.
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "SafeReport/1.0 (you@example.com)",
+        "User-Agent": "Reportify/1.0 (you@example.com)",
         Accept: "application/json",
       },
     });

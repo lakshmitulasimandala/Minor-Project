@@ -1,7 +1,7 @@
-# Copilot Instructions for SafeReport
+# Copilot Instructions for Reportify
 
 ## Project Overview
-SafeReport is a Next.js-based crime/incident reporting platform with anonymous user submission, AI-powered image analysis, and admin dashboard for review. The architecture separates public reporting flows from authenticated admin workflows.
+Reportify is a Next.js-based crime/incident reporting platform with anonymous user submission, AI-powered image analysis, and admin dashboard for review. The architecture separates public reporting flows from authenticated admin workflows.
 
 ## Architecture & Data Flow
 

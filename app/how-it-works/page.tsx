@@ -1,25 +1,39 @@
-import Image from "next/image";
+"use client"
+import Link from "next/link"
+import { motion } from "framer-motion"
 
 export default function HowItWorks() {
-  return (
-    <div className="relative min-h-screen bg-black selection:bg-sky-500/20 overflow-hidden">
-      {/* Gradient Background */}
-      <div className="fixed inset-0 -z-10 min-h-screen">
-        <div className="absolute inset-0 h-full bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.03),transparent_50%)]" />
-        <div className="absolute inset-0 h-full bg-[radial-gradient(circle_at_center,rgba(14,165,233,0.04),transparent_70%)]" />
-      </div>
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      },
+    },
+  }
 
-      <main className="relative px-6 pt-32">
-        <div className="mx-auto max-w-5xl">
+  const itemVariants = {
+    hidden: { opacity: 0, x: -30 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.5 },
+    },
+  }
+
+  return (
+    <div className="relative min-h-screen selection:bg-orange-500/20">
+      <main className="relative px-6 pt-20 pb-20">
+        <div className="mx-auto max-w-4xl">
           {/* Header Section */}
-          <div className="flex flex-col items-center text-center">
-            <div className="inline-flex h-9 items-center gap-2 rounded-full border border-sky-500/20 bg-sky-500/10 px-4 text-sm text-sky-400">
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+          <motion.div className="mb-20 text-center" initial="hidden" animate="visible" variants={containerVariants}>
+            <motion.div
+              variants={itemVariants}
+              className="mb-6 inline-flex h-10 items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 text-sm text-orange-400"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -28,36 +42,32 @@ export default function HowItWorks() {
                 />
               </svg>
               Understanding Our Process
-            </div>
+            </motion.div>
 
-            <h1 className="mt-8 bg-gradient-to-b from-white to-white/80 bg-clip-text text-5xl font-bold tracking-tight text-transparent">
-              How SafeReport Works
-              <span className="block text-2xl mt-4 bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
-                Your Safety is Our Priority
-              </span>
-            </h1>
+            <motion.h1 variants={itemVariants} className="mb-6 text-5xl font-bold text-white">
+              How Reportify Works
+            </motion.h1>
 
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-400">
-              Learn how we protect your identity while ensuring your report
-              reaches the right authorities.
-            </p>
-          </div>
+            <motion.p variants={itemVariants} className="mx-auto max-w-2xl text-lg text-zinc-400">
+              Learn how we protect your identity while ensuring your report reaches authorities safely.
+            </motion.p>
+          </motion.div>
 
-          {/* Process Steps */}
-          <div className="mt-24 grid gap-12">
+          {/* Process Steps - Improved Layout */}
+          <motion.div
+            className="mb-20 space-y-6"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+          >
             {[
               {
                 step: "01",
                 title: "Submit Your Report",
-                description:
-                  "Fill out our secure form with as much detail as possible. No personal information is required. You can include photos, videos, or documents if available.",
+                description: "Fill out our secure form with detailed information. No personal data required.",
                 icon: (
-                  <svg
-                    className="h-6 w-6 text-sky-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
+                  <svg className="h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -70,15 +80,9 @@ export default function HowItWorks() {
               {
                 step: "02",
                 title: "Encryption & Anonymization",
-                description:
-                  "Your report is immediately encrypted using military-grade protocols. All identifying metadata is stripped from your submission, including IP address and device information.",
+                description: "Military-grade encryption and metadata removal keeps you completely protected.",
                 icon: (
-                  <svg
-                    className="h-6 w-6 text-sky-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
+                  <svg className="h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -91,15 +95,9 @@ export default function HowItWorks() {
               {
                 step: "03",
                 title: "Verification & Routing",
-                description:
-                  "Our system verifies the report's jurisdiction and automatically routes it to the appropriate law enforcement agency. The entire process maintains your anonymity.",
+                description: "Automatic jurisdiction verification and secure routing to appropriate agencies.",
                 icon: (
-                  <svg
-                    className="h-6 w-6 text-sky-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
+                  <svg className="h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -111,16 +109,10 @@ export default function HowItWorks() {
               },
               {
                 step: "04",
-                title: "Secure Communication Channel",
-                description:
-                  "If needed, law enforcement can communicate with you through our encrypted platform using your anonymous report ID. You maintain control over the conversation.",
+                title: "Secure Communication",
+                description: "Encrypted two-way communication channel with authorities using your report ID.",
                 icon: (
-                  <svg
-                    className="h-6 w-6 text-sky-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
+                  <svg className="h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -131,50 +123,50 @@ export default function HowItWorks() {
                 ),
               },
             ].map((step, i) => (
-              <div
+              <motion.div
                 key={i}
-                className="group relative overflow-hidden rounded-2xl bg-zinc-900 p-8 transition-all hover:bg-zinc-800/80"
+                variants={itemVariants}
+                whileHover={{ x: 8, transition: { duration: 0.3 } }}
+                className="group relative overflow-hidden rounded-2xl bg-[#1f1a16] p-8 border border-white/5 hover:border-orange-500/30 transition-all"
               >
-                <div className="absolute inset-0 bg-gradient-to-b from-sky-500/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                <div className="relative flex gap-6">
-                  <div className="flex-shrink-0">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10">
+                <div className="flex gap-6">
+                  <motion.div
+                    className="flex-shrink-0"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 + 0.2 }}
+                  >
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-orange-500/10 border border-orange-500/30">
                       {step.icon}
                     </div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-sky-400">
-                      Step {step.step}
-                    </div>
-                    <h3 className="mt-2 text-xl font-medium text-white">
-                      {step.title}
-                    </h3>
-                    <p className="mt-3 text-base leading-relaxed text-zinc-400">
-                      {step.description}
-                    </p>
+                  </motion.div>
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-orange-400 mb-1">Step {step.step}</div>
+                    <h3 className="text-xl font-semibold text-white mb-2">{step.title}</h3>
+                    <p className="text-zinc-400">{step.description}</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* Security Features */}
-          <div className="mt-24 rounded-2xl bg-zinc-900 p-8">
-            <h2 className="text-2xl font-bold text-white text-center mb-8">
-              Security Measures
-            </h2>
-            <div className="grid gap-6 sm:grid-cols-3">
+          <motion.div
+            className="mb-20 rounded-2xl bg-[#1f1a16] p-12 border border-white/5"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="mb-12 text-2xl font-bold text-white text-center">Security Measures</h2>
+            <div className="grid gap-8 sm:grid-cols-3">
               {[
                 {
                   title: "End-to-End Encryption",
-                  description: "All data is encrypted in transit and at rest",
+                  description: "All data encrypted in transit and at rest",
                   icon: (
-                    <svg
-                      className="h-6 w-6 text-sky-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
+                    <svg className="h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -186,14 +178,9 @@ export default function HowItWorks() {
                 },
                 {
                   title: "No Logs Policy",
-                  description: "We never store IP addresses or user metadata",
+                  description: "Never store IP addresses or user metadata",
                   icon: (
-                    <svg
-                      className="h-6 w-6 text-sky-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
+                    <svg className="h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -205,14 +192,9 @@ export default function HowItWorks() {
                 },
                 {
                   title: "Regular Audits",
-                  description: "Independent security firms verify our systems",
+                  description: "Independent security firms verify systems",
                   icon: (
-                    <svg
-                      className="h-6 w-6 text-sky-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
+                    <svg className="h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -223,45 +205,50 @@ export default function HowItWorks() {
                   ),
                 },
               ].map((feature, i) => (
-                <div key={i} className="text-center p-6">
+                <motion.div
+                  key={i}
+                  className="text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                >
                   <div className="flex justify-center mb-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500/10 border border-orange-500/30">
                       {feature.icon}
                     </div>
                   </div>
-                  <h3 className="text-lg font-medium text-white mb-2">
-                    {feature.title}
-                  </h3>
+                  <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
                   <p className="text-sm text-zinc-400">{feature.description}</p>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* CTA Section */}
-          <div className="mt-24 mb-20 text-center">
-            <h2 className="text-2xl font-bold text-white mb-6">
-              Ready to Make a Report?
-            </h2>
-            <button className="group relative inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-sky-500 px-8 text-sm font-medium text-white transition-all hover:bg-sky-400">
-              Start Anonymous Report
-              <svg
-                className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="mb-8 text-2xl font-bold text-white">Ready to Make a Report?</h2>
+            <Link href="/submit-report">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex h-12 items-center gap-2 rounded-xl bg-orange-500 px-8 font-medium text-white hover:bg-orange-400 transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 12h14M12 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-          </div>
+                Start Anonymous Report
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </motion.button>
+            </Link>
+          </motion.div>
         </div>
       </main>
     </div>
-  );
+  )
 }

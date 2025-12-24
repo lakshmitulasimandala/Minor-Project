@@ -17,7 +17,7 @@ export function ReportStatus({ report }: ReportStatusProps) {
   };
 
   return (
-    <div className="rounded-xl bg-zinc-900/50 border border-zinc-800/50 p-6 space-y-6">
+    <div className="rounded-xl border p-6 space-y-6" style={{backgroundColor: "var(--card)", borderColor: "var(--border)"}}>
       {/* Status Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -63,7 +63,7 @@ export function ReportStatus({ report }: ReportStatusProps) {
           {report.timeline?.map((event: any, index: number) => (
             <div key={index} className="flex gap-4">
               <div className="flex-none">
-                <div className="h-2 w-2 mt-2 rounded-full bg-sky-500" />
+                <div className="h-2 w-2 mt-2 rounded-full bg-orange-500" />
               </div>
               <div>
                 <p className="text-sm text-white">{event.description}</p>

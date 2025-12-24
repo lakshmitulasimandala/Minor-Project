@@ -19,7 +19,7 @@ export function ReportWizard() {
   };
 
   return (
-    <div className="rounded-2xl bg-zinc-900 p-8">
+    <div className="rounded-2xl p-8" style={{backgroundColor: "var(--card)"}}>
       {currentStep === 1 && <ReportForm onComplete={handleStepComplete} />}
       {currentStep === 2 && (
         <ReportSubmitted data={reportData} onComplete={handleStepComplete} />

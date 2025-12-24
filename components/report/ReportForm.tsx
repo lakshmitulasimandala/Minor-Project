@@ -205,6 +205,21 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsSubmitting(true);
 
     try {
+      // Validate required fields before sending
+      if (!formData.incidentType || !formData.specificType || !formData.title || !formData.description) {
+        const missingFields = [];
+        if (!formData.incidentType) missingFields.push("Emergency/Non-Emergency type");
+        if (!formData.specificType) missingFields.push("Specific incident type");
+        if (!formData.title) missingFields.push("Title");
+        if (!formData.description) missingFields.push("Description");
+        
+        const errorMsg = `Please fill in all required fields: ${missingFields.join(", ")}`;
+        console.error("❌ Validation error:", errorMsg);
+        alert(errorMsg);
+        setIsSubmitting(false);
+        return;
+      }
+
       const reportData = {
         reportId: generateReportId(),
         type: formData.incidentType,
@@ -218,6 +233,8 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         status: "PENDING",
       };
 
+      console.log("📤 Sending report data:", reportData);
+
       const response = await fetch("/api/reports/create", {
         method: "POST",
         headers: {
@@ -226,15 +243,36 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         body: JSON.stringify(reportData),
       });
 
-      const result = await response.json();
+      console.log("📡 Response status:", response.status);
+
+      let result;
+      try {
+        result = await response.json();
+      } catch (parseError) {
+        console.error("❌ Failed to parse response:", parseError);
+        throw new Error(`Server returned invalid response: ${response.status}`);
+      }
+      
+      console.log("📥 Response data:", result);
 
       if (!response.ok) {
-        throw new Error(result.error || "Failed to submit report");
+        const errorMsg = result?.error || result?.message || `API returned ${response.status}`;
+        console.error("❌ API Error:", errorMsg);
+        throw new Error(errorMsg);
       }
 
+      if (!result.success) {
+        console.error("❌ API returned success: false");
+        throw new Error(result.error || "Server returned unsuccessful response");
+      }
+
+      console.log("✅ Report submitted successfully!");
       onComplete(result);
-    } catch (error) {
-      console.error("Error submitting report:", error);
+    } catch (error: any) {
+      console.error("❌ Error submitting report:", error);
+      console.error("❌ Full error object:", error);
+      const errorMessage = error?.message || "Failed to submit report. Please try again.";
+      alert(`Error: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -319,7 +357,7 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         <label
           htmlFor="image-upload"
           className="block w-full p-8 border-2 border-dashed border-zinc-700 rounded-2xl 
-                   hover:border-sky-500/50 hover:bg-sky-500/5 transition-all duration-200
+                   hover:border-orange-500/50 hover:bg-orange-500/5 transition-all duration-200
                    cursor-pointer text-center"
         >
           {image ? (
@@ -358,7 +396,7 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
           <div className="absolute inset-0 bg-black/50 rounded-2xl flex items-center justify-center">
             <div className="flex items-center space-x-3">
               <svg
-                className="animate-spin h-5 w-5 text-sky-500"
+                className="animate-spin h-5 w-5 text-orange-500"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -377,7 +415,7 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              <span className="text-sky-500 font-medium">
+              <span className="text-orange-500 font-medium">
                 Analyzing image...
               </span>
             </div>
@@ -397,7 +435,7 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
           }
           className="w-full rounded-xl bg-zinc-900/50 border border-zinc-800 px-4 py-3.5
                    text-white transition-colors duration-200
-                   focus:outline-none focus:ring-2 focus:ring-sky-500/40"
+                   focus:outline-none focus:ring-2 focus:ring-orange-500/40"
           required
         >
           <option value="">Select type</option>
@@ -436,7 +474,7 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
           }
           className="w-full rounded-xl bg-zinc-900/50 border border-zinc-800 px-4 py-3.5
                    text-white transition-colors duration-200
-                   focus:outline-none focus:ring-2 focus:ring-sky-500/40"
+                   focus:outline-none focus:ring-2 focus:ring-orange-500/40"
           required
         />
       </div>
@@ -463,9 +501,9 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full relative group overflow-hidden rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 
+        className="w-full relative group overflow-hidden rounded-xl bg-orange-500 
                  px-4 py-3.5 text-sm font-medium text-white shadow-lg
-                 transition-all duration-200 hover:from-sky-400 hover:to-blue-500
+                 transition-all duration-200 hover:bg-orange-400
                  disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <div className="relative flex items-center justify-center gap-2">
