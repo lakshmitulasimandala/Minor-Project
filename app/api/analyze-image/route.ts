@@ -1,47 +1,99 @@
+
+
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+// Helper function to call OpenRouter
+async function analyzeImageWithOpenRouter(base64Data: string, mimeType: string) {
+  const prompt = `
+Analyze this image of a civic issue and respond EXACTLY in this format:
+TITLE: short title
+TYPE: one of (Theft, Fire Outbreak, Illegal Waste Dumping, Pothole, Uncollected Waste, Uneven Road, Unclosed Manhole, Electrical Hazard, Natural Disaster, Road Block, Sewage Overflow, Streetlight Not Working, Exposed Wiring, Other)
+DESCRIPTION: short description (max 30 words)
+`;
 
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      "X-Title": "Anonymous Issue Reporter",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-2.0-flash-exp:free",
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: prompt },
+            {
+              type: "image_url",
+              image_url: { url: `data:${mimeType};base64,${base64Data}` },
+            },
+          ],
+        },
+      ],
+      max_tokens: 200, // Keep response concise
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || "OpenRouter API failed");
+  }
+
+  return await response.json();
+}
+
+// Main API route
 export async function POST(request: Request) {
   try {
     const { image } = await request.json();
+
+    // Validate image
+    if (!image || !image.startsWith("data:image/")) {
+      return NextResponse.json(
+        { error: "Invalid image format" },
+        { status: 400 }
+      );
+    }
+
+    // Extract base64 data
     const base64Data = image.split(",")[1];
+    const mimeType = image.match(/^data:(image\/\w+);base64,/)?.[1] || "image/jpeg";
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    // Call OpenRouter
+    const data = await analyzeImageWithOpenRouter(base64Data, mimeType);
+    const text = data.choices[0].message.content;
 
-    const prompt = `Analyze this emergency situation image and respond in this exact format without any asterisks or bullet points:
-TITLE: Write a clear, brief title
-TYPE: Choose one (Theft, Fire Outbreak, Medical Emergency, Natural Disaster, Violence, Illegal Waste Dumping, Pothole, Uncollected Waste, Uneven Road, Unclosed Manhole, Electrical Hazard, Road Block, Sewage Overflow, Streetlight Not Working, Exposed Wiring, or Other)
-DESCRIPTION: Write a clear, concise description`;
+    console.log("✅ OpenRouter Response:", text);
 
-    const result = await model.generateContent([
-      prompt,
-      {
-        inlineData: {
-          data: base64Data,
-          mimeType: "image/jpeg",
-        },
-      },
-    ]);
-
-    const text = await result.response.text(); // Ensure text() is awaited
-
-    // Parse the response more precisely
-    const titleMatch = text.match(/TITLE:\s*(.+)/);
-    const typeMatch = text.match(/TYPE:\s*(.+)/);
-    const descMatch = text.match(/DESCRIPTION:\s*(.+)/);
+    // Parse structured response
+    const title = text.match(/TITLE:\s*(.*?)(?:\n|$)/)?.[1]?.trim() || "";
+    const reportType = text.match(/TYPE:\s*(.*?)(?:\n|$)/)?.[1]?.trim() || "";
+    const description = text.match(/DESCRIPTION:\s*(.*?)(?:\n|$)/)?.[1]?.trim() || "";
 
     return NextResponse.json({
-      title: titleMatch?.[1]?.trim() || "",
-      reportType: typeMatch?.[1]?.trim() || "",
-      description: descMatch?.[1]?.trim() || "",
+      title,
+      reportType,
+      description,
+      success: !!(title && reportType), // Flag if AI succeeded
     });
-  } catch (error) {
-    console.error("Image analysis error:", error);
-    return NextResponse.json(
-      { error: "Failed to analyze image" },
-      { status: 500 }
-    );
+
+  } catch (error: any) {
+    console.error("❌ Image analysis failed:", error);
+
+    // Check for specific errors
+    if (error.message?.includes("rate limit")) {
+      console.log("⚠️ Rate limit hit, falling back to manual selection");
+    }
+
+    // Always return graceful fallback
+    return NextResponse.json({
+      title: "",
+      reportType: "",
+      description: "",
+      success: false,
+    });
   }
 }

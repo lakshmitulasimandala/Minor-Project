@@ -21,6 +21,29 @@ const REPORT_TYPES = [
   "Other",
 ] as const;
 
+
+const normalizeReportType = (aiType: string): string => {
+    const t = aiType.toLowerCase();
+
+    if (t.includes("theft")) return "Theft";
+    if (t.includes("fire")) return "Fire Outbreak";
+    if (t.includes("waste")) return "Illegal Waste Dumping";
+    if (t.includes("pothole")) return "Pothole";
+    if (t.includes("uncollected")) return "Uncollected Waste";
+    if (t.includes("uneven")) return "Uneven Road";
+    if (t.includes("manhole")) return "Unclosed Manhole";
+    if (t.includes("electrical")) return "Electrical Hazard";
+    if (t.includes("natural")) return "Natural Disaster";
+    if (t.includes("road block")) return "Road Block";
+    if (t.includes("sewage")) return "Sewage Overflow";
+    if (t.includes("streetlight")) return "Streetlight Not Working";
+    if (t.includes("wiring")) return "Exposed Wiring";
+
+    return "Other";
+  };
+
+
+
 type ReportType = "EMERGENCY" | "NON_EMERGENCY";
 
 interface ReportFormProps {
@@ -46,44 +69,125 @@ export function ReportForm({ onComplete }: ReportFormProps) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-    setIsAnalyzing(true);
+  //   setIsAnalyzing(true);
 
-    try {
-      const base64 = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(file);
-      });
+  //   try {
+  //     const base64 = await new Promise((resolve) => {
+  //       const reader = new FileReader();
+  //       reader.onloadend = () => resolve(reader.result);
+  //       reader.readAsDataURL(file);
+  //     });
 
-      setImage(base64 as string);
+  //     setImage(base64 as string);
 
-      const response = await fetch("/api/analyze-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64 }),
-      });
+  //     const response = await fetch("/api/analyze-image", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ image: base64 }),
+  //     });
 
-      const data = await response.json();
+  //     const data = await response.json();
 
-      if (data.title && data.description && data.reportType) {
-        setFormData((prev) => ({
-          ...prev,
-          title: data.title,
-          description: data.description,
-          specificType: data.reportType,
-        }));
-        //setImage(base64 as string);
-      }
-    } catch (error) {
-      console.error("Error analyzing image:", error);
-    } finally {
-      setIsAnalyzing(false);
+  //     console.log("AI raw reportType:", data.reportType);
+  //     console.log("Normalized type:", normalizeReportType(data.reportType));
+
+  //     if (data.title && data.description && data.reportType) {
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         title: data.title,
+  //         description: data.description,
+  //         specificType: normalizeReportType(data.reportType),
+  //       }));
+  //       //setImage(base64 as string);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error analyzing image:", error);
+  //   } finally {
+  //     setIsAnalyzing(false);
+  //   }
+  // };
+
+  // Updated handleImageUpload function for ReportForm.tsx
+
+  //handleImageUpload function given by claude
+const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  console.log("📁 File selected:", file.name, file.type, file.size);
+
+  setIsAnalyzing(true);
+
+  try {
+    // Convert to base64
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    console.log("✅ Image converted to base64");
+
+    // Set image immediately so user sees it
+    setImage(base64);
+
+    // Call AI analysis
+    console.log("🔄 Calling /api/analyze-image...");
+    
+    const response = await fetch("/api/analyze-image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: base64 }),
+    });
+
+    console.log("📡 Response status:", response.status);
+
+    if (!response.ok) {
+      throw new Error(`API returned ${response.status}`);
     }
-  };
+
+    const data = await response.json();
+
+    console.log("📥 API Response:", data);
+    console.log("🎯 AI raw reportType:", data.reportType);
+    console.log("🔄 Normalized type:", normalizeReportType(data.reportType));
+
+    // Update form with AI suggestions if available
+    if (data.success && data.title && data.description && data.reportType) {
+      const normalizedType = normalizeReportType(data.reportType);
+      
+      console.log("✅ AI analysis successful - auto-filling form");
+      console.log("   Title:", data.title);
+      console.log("   Type:", normalizedType);
+      console.log("   Description:", data.description);
+
+      setFormData((prev) => ({
+        ...prev,
+        title: data.title,
+        description: data.description,
+        specificType: normalizedType,
+      }));
+    } else {
+      console.warn("⚠️ AI analysis incomplete - user must fill manually");
+      console.warn("   Success flag:", data.success);
+      console.warn("   Title present:", !!data.title);
+      console.warn("   Type present:", !!data.reportType);
+      console.warn("   Description present:", !!data.description);
+    }
+
+  } catch (error) {
+    console.error("❌ Error during image analysis:", error);
+    // Image is already set, so user can still continue manually
+  } finally {
+    setIsAnalyzing(false);
+    console.log("✅ Image analysis process complete");
+  }
+};
 
   const generateReportId = useCallback(() => {
     const timestamp = Date.now().toString();
