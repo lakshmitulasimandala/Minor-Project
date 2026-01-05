@@ -30,23 +30,22 @@ The main entry point highlighting anonymous reporting and the system’s purpose
 ---
 
 ### 📝 Submit Report Page
-Users can submit reports with descriptions, images, and location data.
+Users can submit reports with descriptions, images, and location data If image is not detected by AI.
 
 ![Submit Report Page](./ReportifyOutputImages/images/SubmitReportPage.png)
 
 ---
 
+### 🖼️ Image Analysis
+Uploaded images are analyzed by Gemini and autofills data of the form to assist authorities in understanding the reported issue.
+
+![Image Analysis](./ReportifyOutputImages/images/AiImageAnalysisCoompleted.png)
+
+---
 ### 📍 Location Detection
 Automatically detects the user’s location to improve report accuracy.
 
 ![Location Detection](./ReportifyOutputImages/images/LocationDetected.png)
-
----
-
-### 🖼️ Image Analysis
-Uploaded images are analyzed to assist authorities in understanding the reported issue.
-
-![Image Analysis](./ReportifyOutputImages/images/AiImageAnalysisCoompleted.png)
 
 ---
 
@@ -65,7 +64,7 @@ Users can download their submitted report for future reference.
 ---
 
 ### 🔍 Track Report Status
-Users can track report progress using the unique Report ID.
+Users can track report progress using the unique Report ID copied from PDF or after submitting report.
 
 ![Track Report](./ReportifyOutputImages/images/TrackReportwithID.png)
 
