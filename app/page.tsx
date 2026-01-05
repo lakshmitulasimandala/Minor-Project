@@ -33,67 +33,102 @@ export default function Home() {
   }
 
   return (
-    <main className="relative px-6 pt-20 pb-20">
-      <div className="mx-auto max-w-6xl">
-        {/* Hero Section with improved spacing */}
-        <motion.div className="mb-32" initial="hidden" animate="visible" variants={containerVariants}>
-          <motion.div
-            variants={itemVariants}
-            className="mb-8 inline-flex h-10 items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 text-sm text-orange-400"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
-            Secure & Anonymous Reporting
-          </motion.div>
+    <main className="relative px-6 pt-2 pb-20 mr-0 lg:mr-0 lg:px-0">
 
-          <motion.h1
-            variants={itemVariants}
-            className="mb-6 text-6xl sm:text-7xl font-bold tracking-tight text-white leading-tight"
-          >
-            Report the Issue.
-            <motion.span
-              className="block bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-            >
-              Stay Anonymous.
-            </motion.span>
-          </motion.h1>
+      {/* ================= HERO SECTION ================= */}
+      <section className="relative mb-32 min-h-[600px] overflow-hidden">
 
-          <motion.p variants={itemVariants} className="mb-10 max-w-2xl text-lg text-zinc-300 leading-relaxed">
-            From public safety to civic problems, submit reports anonymously and help authorities act faster. Your identity remains completely anonymous with
-            military-grade encryption.
-          </motion.p>
-
-          {/* CTA Buttons with improved spacing */}
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/submit-report">
-                <button className="h-12 px-8 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-400 transition-colors">
-                  Make Anonymous Report
-                  <svg className="h-4 w-4 inline-block ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/how-it-works">
-                <button className="h-12 px-8 rounded-xl bg-white/5 text-white font-medium ring-1 ring-white/10 hover:bg-white/10 transition-colors">
-                  How it Works
-                </button>
-              </Link>
-            </motion.div>
-          </motion.div>
+        {/* RIGHT SIDE BACKGROUND IMAGE */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 2 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="
+            hidden lg:block
+            absolute top-0 -right-[12%]
+            h-full w-[55%]
+            bg-[url('/illustrations/civic-road.png')]
+            bg-cover bg-right bg-no-repeat
+          "
+        >
+          <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/60 to-transparent" />
         </motion.div>
 
+        {/* HERO CONTENT */}
+        <div className="relative z-10 mx-12 max-w-6xl">
+          <motion.div
+            className="grid grid-cols-1 lg:grid-cols-2 items-center min-h-[600px]"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+
+            {/* LEFT: TEXT */}
+            <div className="lg:pl-2 ">
+              <motion.div
+                variants={itemVariants}
+                className="mb-8 inline-flex h-10 items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 text-sm text-orange-400"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+                Secure & Anonymous Reporting
+              </motion.div>
+
+              <motion.h1
+                variants={itemVariants}
+                className="mb-6 text-6xl sm:text-7xl font-bold tracking-tight text-white leading-tight"
+              >
+                Report the Issue.
+                <motion.span
+                  className="block bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.6 }}
+                >
+                  Stay Anonymous.
+                </motion.span>
+              </motion.h1>
+
+              <motion.p
+                variants={itemVariants}
+                className="mb-10 max-w-2xl text-lg text-zinc-300 leading-relaxed"
+              >
+                From public safety to civic problems, submit reports anonymously and help
+                authorities act faster. Your identity remains completely anonymous with
+                military-grade encryption.
+              </motion.p>
+
+              <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link href="/submit-report">
+                    <button className="h-12 px-8 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-400 transition-colors">
+                      Make Anonymous Report →
+                    </button>
+                  </Link>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link href="/how-it-works">
+                    <button className="h-12 px-8 rounded-xl bg-white/5 text-white font-medium ring-1 ring-white/10 hover:bg-white/10 transition-colors">
+                      How it Works
+                    </button>
+                  </Link>
+                </motion.div>
+              </motion.div>
+            </div>
+
+            {/* RIGHT EMPTY COLUMN (background shows here) */}
+            <div className="hidden lg:block" />
+
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ================= REST OF PAGE ================= */}
+      <div className="mx-auto max-w-6xl">
         {/* Features Grid with better layout */}
         <motion.div
           className="mb-32"
@@ -215,7 +250,7 @@ export default function Home() {
             Trusted by Law Enforcement Nationwide
           </div>
         </motion.div>
-      </div>
+      </div>  
     </main>
   )
 }

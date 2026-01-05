@@ -21,18 +21,24 @@ export default function Navbar() {
             <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
               <Link href="/" className="flex items-center gap-3">
                 <motion.div
-                  className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center"
-                  whileHover={{ rotate: 5 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    className="h-10 w-10 flex items-center justify-center"
+                    whileHover={{ rotate: 5, scale: 1.05 }} 
+                    transition={{ duration: 0.3 }}
+                  >
+                  {/* <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
                       d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                     />
-                  </svg>
+                  </svg> */}
+
+                  <img
+                    src="/logo.png"
+                    alt="Reportify Logo"
+                    className="h-13 w-13 object-contain drop-shadow-md"
+                  />
                 </motion.div>
                 <span className="text-lg font-semibold text-white hidden sm:inline">Reportify</span>
               </Link>
