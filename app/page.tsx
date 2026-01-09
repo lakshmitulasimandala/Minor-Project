@@ -47,7 +47,7 @@ export default function Home() {
             hidden lg:block
             absolute top-0 -right-[12%]
             h-full w-[55%]
-            bg-[url('/illustrations/civic-road.png')]
+            bg-[url('/Illustrations/civic-road.png')]
             bg-cover bg-right bg-no-repeat
           "
         >
