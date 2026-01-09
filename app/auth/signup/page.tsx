@@ -29,166 +29,73 @@ export default function SignUp() {
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
-      }
+      if (!response.ok) throw new Error(data.message);
 
       router.push("/auth/signin");
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "Failed to sign up");
+    } catch (err: any) {
+      setError(err.message || "Signup failed");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-center text-3xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent mb-2">
+    <div className="min-h-screen bg-black flex flex-col justify-center py-12 px-4">
+      <div className="mx-auto w-full max-w-md">
+        <h1 className="text-center text-3xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent mb-2">
           Create Account
         </h1>
-        <h2 className="text-center text-sm text-neutral-400">
-          Sign up to get started
-        </h2>
+        <p className="text-center text-sm text-zinc-400">
+          Admin / Moderator access
+        </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-neutral-900/50 backdrop-blur-sm py-8 px-4 shadow-xl border border-neutral-800 rounded-xl sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-neutral-300"
-              >
-                Full Name
-              </label>
-              <div className="mt-1">
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-neutral-800 rounded-lg bg-neutral-900 placeholder-neutral-500 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
-                  placeholder="Enter your full name"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-neutral-300"
-              >
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-neutral-800 rounded-lg bg-neutral-900 placeholder-neutral-500 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
-                  placeholder="Enter your email"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-neutral-300"
-              >
-                Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-neutral-800 rounded-lg bg-neutral-900 placeholder-neutral-500 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
-                  placeholder="Create a password"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-neutral-300"
-              >
-                Confirm Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-neutral-800 rounded-lg bg-neutral-900 placeholder-neutral-500 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
-                  placeholder="Confirm your password"
-                />
-              </div>
-            </div>
+      <div className="mt-8 mx-auto w-full max-w-md">
+        <div className="bg-[#1f1a16] p-8 rounded-2xl border border-white/5 shadow-xl">
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {["name", "email", "password", "confirmPassword"].map((field) => (
+              <input
+                key={field}
+                name={field}
+                type={field.includes("password") ? "password" : "text"}
+                placeholder={field.replace(/([A-Z])/g, " $1")}
+                required
+                value={(formData as any)[field]}
+                onChange={handleChange}
+                className="w-full rounded-lg bg-black border border-border px-3 py-2 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+              />
+            ))}
 
             {error && (
-              <div className="text-red-500 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+              <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
                 {error}
               </div>
             )}
 
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  "Sign up"
-                )}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-11 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-400 transition disabled:opacity-50"
+            >
+              {isLoading ? "Creating..." : "Sign up"}
+            </button>
           </form>
 
-          <div className="mt-6 text-center text-sm">
-            <span className="text-neutral-400">Already have an account?</span>{" "}
-            <Link
-              href="/auth/signin"
-              className="text-blue-500 hover:text-blue-400 font-medium"
-            >
+          <p className="mt-6 text-center text-sm text-zinc-400">
+            Already have an account?{" "}
+            <Link href="/auth/signin" className="text-orange-400 hover:underline">
               Sign in
             </Link>
-          </div>
+          </p>
         </div>
       </div>
     </div>

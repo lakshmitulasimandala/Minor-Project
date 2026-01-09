@@ -28,7 +28,7 @@ export default function SignIn() {
       } else {
         router.push("/dashboard");
       }
-    } catch (error) {
+    } catch {
       setError("An error occurred during sign in");
     } finally {
       setIsLoading(false);
@@ -36,82 +36,60 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-center text-3xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent mb-2">
+    <div className="min-h-screen bg-black flex flex-col justify-center py-12 px-4">
+      <div className="mx-auto w-full max-w-md">
+        <h1 className="text-center text-3xl font-bold bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent mb-2">
           Welcome Back
         </h1>
-        <h2 className="text-center text-sm text-neutral-400">
-          Sign in to access your admin dashboard
-        </h2>
+        <p className="text-center text-sm text-zinc-400">
+          Sign in to continue
+        </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-neutral-900/50 backdrop-blur-sm py-8 px-4 shadow-xl border border-neutral-800 rounded-xl sm:px-10">
+      <div className="mt-8 mx-auto w-full max-w-md">
+        <div className="bg-[#1f1a16] p-8 rounded-2xl border border-white/5 shadow-xl">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-neutral-300"
-              >
+              <label className="block text-sm text-zinc-300 mb-1">
                 Email address
               </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-neutral-800 rounded-lg bg-neutral-900 placeholder-neutral-500 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
-                  placeholder="Enter your email"
-                />
-              </div>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="w-full rounded-lg bg-black border border-border px-3 py-2 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+              />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-neutral-300"
-              >
+              <label className="block text-sm text-zinc-300 mb-1">
                 Password
               </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-neutral-800 rounded-lg bg-neutral-900 placeholder-neutral-500 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
-                  placeholder="Enter your password"
-                />
-              </div>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                className="w-full rounded-lg bg-black border border-border px-3 py-2 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+              />
             </div>
 
             {error && (
-              <div className="text-red-500 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+              <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
                 {error}
               </div>
             )}
 
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  "Sign in"
-                )}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-11 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-400 transition disabled:opacity-50"
+            >
+              {isLoading ? "Signing in..." : "Sign in"}
+            </button>
           </form>
         </div>
       </div>
