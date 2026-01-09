@@ -21,6 +21,29 @@ const REPORT_TYPES = [
   "Other",
 ] as const;
 
+
+const normalizeReportType = (aiType: string): string => {
+    const t = aiType.toLowerCase();
+
+    if (t.includes("theft")) return "Theft";
+    if (t.includes("fire")) return "Fire Outbreak";
+    if (t.includes("waste")) return "Illegal Waste Dumping";
+    if (t.includes("pothole")) return "Pothole";
+    if (t.includes("uncollected")) return "Uncollected Waste";
+    if (t.includes("uneven")) return "Uneven Road";
+    if (t.includes("manhole")) return "Unclosed Manhole";
+    if (t.includes("electrical")) return "Electrical Hazard";
+    if (t.includes("natural")) return "Natural Disaster";
+    if (t.includes("road block")) return "Road Block";
+    if (t.includes("sewage")) return "Sewage Overflow";
+    if (t.includes("streetlight")) return "Streetlight Not Working";
+    if (t.includes("wiring")) return "Exposed Wiring";
+
+    return "Other";
+  };
+
+
+
 type ReportType = "EMERGENCY" | "NON_EMERGENCY";
 
 interface ReportFormProps {
@@ -46,44 +69,125 @@ export function ReportForm({ onComplete }: ReportFormProps) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-    setIsAnalyzing(true);
+  //   setIsAnalyzing(true);
 
-    try {
-      const base64 = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(file);
-      });
+  //   try {
+  //     const base64 = await new Promise((resolve) => {
+  //       const reader = new FileReader();
+  //       reader.onloadend = () => resolve(reader.result);
+  //       reader.readAsDataURL(file);
+  //     });
 
-      setImage(base64 as string);
+  //     setImage(base64 as string);
 
-      const response = await fetch("/api/analyze-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64 }),
-      });
+  //     const response = await fetch("/api/analyze-image", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ image: base64 }),
+  //     });
 
-      const data = await response.json();
+  //     const data = await response.json();
 
-      if (data.title && data.description && data.reportType) {
-        setFormData((prev) => ({
-          ...prev,
-          title: data.title,
-          description: data.description,
-          specificType: data.reportType,
-        }));
-        //setImage(base64 as string);
-      }
-    } catch (error) {
-      console.error("Error analyzing image:", error);
-    } finally {
-      setIsAnalyzing(false);
+  //     console.log("AI raw reportType:", data.reportType);
+  //     console.log("Normalized type:", normalizeReportType(data.reportType));
+
+  //     if (data.title && data.description && data.reportType) {
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         title: data.title,
+  //         description: data.description,
+  //         specificType: normalizeReportType(data.reportType),
+  //       }));
+  //       //setImage(base64 as string);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error analyzing image:", error);
+  //   } finally {
+  //     setIsAnalyzing(false);
+  //   }
+  // };
+
+  // Updated handleImageUpload function for ReportForm.tsx
+
+  //handleImageUpload function given by claude
+const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  console.log("📁 File selected:", file.name, file.type, file.size);
+
+  setIsAnalyzing(true);
+
+  try {
+    // Convert to base64
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    console.log("✅ Image converted to base64");
+
+    // Set image immediately so user sees it
+    setImage(base64);
+
+    // Call AI analysis
+    console.log("🔄 Calling /api/analyze-image...");
+    
+    const response = await fetch("/api/analyze-image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: base64 }),
+    });
+
+    console.log("📡 Response status:", response.status);
+
+    if (!response.ok) {
+      throw new Error(`API returned ${response.status}`);
     }
-  };
+
+    const data = await response.json();
+
+    console.log("📥 API Response:", data);
+    console.log("🎯 AI raw reportType:", data.reportType);
+    console.log("🔄 Normalized type:", normalizeReportType(data.reportType));
+
+    // Update form with AI suggestions if available
+    if (data.success && data.title && data.description && data.reportType) {
+      const normalizedType = normalizeReportType(data.reportType);
+      
+      console.log("✅ AI analysis successful - auto-filling form");
+      console.log("   Title:", data.title);
+      console.log("   Type:", normalizedType);
+      console.log("   Description:", data.description);
+
+      setFormData((prev) => ({
+        ...prev,
+        title: data.title,
+        description: data.description,
+        specificType: normalizedType,
+      }));
+    } else {
+      console.warn("⚠️ AI analysis incomplete - user must fill manually");
+      console.warn("   Success flag:", data.success);
+      console.warn("   Title present:", !!data.title);
+      console.warn("   Type present:", !!data.reportType);
+      console.warn("   Description present:", !!data.description);
+    }
+
+  } catch (error) {
+    console.error("❌ Error during image analysis:", error);
+    // Image is already set, so user can still continue manually
+  } finally {
+    setIsAnalyzing(false);
+    console.log("✅ Image analysis process complete");
+  }
+};
 
   const generateReportId = useCallback(() => {
     const timestamp = Date.now().toString();
@@ -101,6 +205,21 @@ export function ReportForm({ onComplete }: ReportFormProps) {
     setIsSubmitting(true);
 
     try {
+      // Validate required fields before sending
+      if (!formData.incidentType || !formData.specificType || !formData.title || !formData.description) {
+        const missingFields = [];
+        if (!formData.incidentType) missingFields.push("Emergency/Non-Emergency type");
+        if (!formData.specificType) missingFields.push("Specific incident type");
+        if (!formData.title) missingFields.push("Title");
+        if (!formData.description) missingFields.push("Description");
+        
+        const errorMsg = `Please fill in all required fields: ${missingFields.join(", ")}`;
+        console.error("❌ Validation error:", errorMsg);
+        alert(errorMsg);
+        setIsSubmitting(false);
+        return;
+      }
+
       const reportData = {
         reportId: generateReportId(),
         type: formData.incidentType,
@@ -114,6 +233,8 @@ export function ReportForm({ onComplete }: ReportFormProps) {
         status: "PENDING",
       };
 
+      console.log("📤 Sending report data:", reportData);
+
       const response = await fetch("/api/reports/create", {
         method: "POST",
         headers: {
@@ -122,15 +243,36 @@ export function ReportForm({ onComplete }: ReportFormProps) {
         body: JSON.stringify(reportData),
       });
 
-      const result = await response.json();
+      console.log("📡 Response status:", response.status);
+
+      let result;
+      try {
+        result = await response.json();
+      } catch (parseError) {
+        console.error("❌ Failed to parse response:", parseError);
+        throw new Error(`Server returned invalid response: ${response.status}`);
+      }
+      
+      console.log("📥 Response data:", result);
 
       if (!response.ok) {
-        throw new Error(result.error || "Failed to submit report");
+        const errorMsg = result?.error || result?.message || `API returned ${response.status}`;
+        console.error("❌ API Error:", errorMsg);
+        throw new Error(errorMsg);
       }
 
+      if (!result.success) {
+        console.error("❌ API returned success: false");
+        throw new Error(result.error || "Server returned unsuccessful response");
+      }
+
+      console.log("✅ Report submitted successfully!");
       onComplete(result);
-    } catch (error) {
-      console.error("Error submitting report:", error);
+    } catch (error: any) {
+      console.error("❌ Error submitting report:", error);
+      console.error("❌ Full error object:", error);
+      const errorMessage = error?.message || "Failed to submit report. Please try again.";
+      alert(`Error: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -215,7 +357,7 @@ export function ReportForm({ onComplete }: ReportFormProps) {
         <label
           htmlFor="image-upload"
           className="block w-full p-8 border-2 border-dashed border-zinc-700 rounded-2xl 
-                   hover:border-sky-500/50 hover:bg-sky-500/5 transition-all duration-200
+                   hover:border-orange-500/50 hover:bg-orange-500/5 transition-all duration-200
                    cursor-pointer text-center"
         >
           {image ? (
@@ -254,7 +396,7 @@ export function ReportForm({ onComplete }: ReportFormProps) {
           <div className="absolute inset-0 bg-black/50 rounded-2xl flex items-center justify-center">
             <div className="flex items-center space-x-3">
               <svg
-                className="animate-spin h-5 w-5 text-sky-500"
+                className="animate-spin h-5 w-5 text-orange-500"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -273,7 +415,7 @@ export function ReportForm({ onComplete }: ReportFormProps) {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              <span className="text-sky-500 font-medium">
+              <span className="text-orange-500 font-medium">
                 Analyzing image...
               </span>
             </div>
@@ -293,7 +435,7 @@ export function ReportForm({ onComplete }: ReportFormProps) {
           }
           className="w-full rounded-xl bg-zinc-900/50 border border-zinc-800 px-4 py-3.5
                    text-white transition-colors duration-200
-                   focus:outline-none focus:ring-2 focus:ring-sky-500/40"
+                   focus:outline-none focus:ring-2 focus:ring-orange-500/40"
           required
         >
           <option value="">Select type</option>
@@ -332,7 +474,7 @@ export function ReportForm({ onComplete }: ReportFormProps) {
           }
           className="w-full rounded-xl bg-zinc-900/50 border border-zinc-800 px-4 py-3.5
                    text-white transition-colors duration-200
-                   focus:outline-none focus:ring-2 focus:ring-sky-500/40"
+                   focus:outline-none focus:ring-2 focus:ring-orange-500/40"
           required
         />
       </div>
@@ -359,9 +501,9 @@ export function ReportForm({ onComplete }: ReportFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full relative group overflow-hidden rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 
+        className="w-full relative group overflow-hidden rounded-xl bg-orange-500 
                  px-4 py-3.5 text-sm font-medium text-white shadow-lg
-                 transition-all duration-200 hover:from-sky-400 hover:to-blue-500
+                 transition-all duration-200 hover:bg-orange-400
                  disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <div className="relative flex items-center justify-center gap-2">

@@ -37,14 +37,29 @@ export function ReportTracker() {
     }
 
     try {
+      console.log("🔍 Searching for report:", reportId);
       const response = await fetch(`/api/reports/${reportId}/details`);
+      
+      console.log("📡 API Response status:", response.status);
+      
       if (!response.ok) {
-        throw new Error("Report not found");
+        const errorData = await response.json();
+        console.error("❌ API Error:", errorData);
+        throw new Error(errorData.error || "Report not found");
       }
+      
       const data = await response.json();
+      console.log("✅ Report data received:", data);
+      
+      if (!data || !data.reportId) {
+        throw new Error("Invalid report data received");
+      }
+      
       setReportDetails(data);
-    } catch (err) {
-      setError("Unable to find report. Please check the ID and try again.");
+      console.log("✅ Report details set successfully");
+    } catch (err: any) {
+      console.error("❌ Error fetching report:", err);
+      setError(err.message || "Unable to find report. Please check the ID and try again.");
     } finally {
       setLoading(false);
     }
@@ -54,13 +69,13 @@ export function ReportTracker() {
     <div className="w-full">
       {/* Header Section */}
       <div className="text-center mb-8">
-        <div className="inline-flex h-9 items-center gap-2 rounded-full border border-sky-500/20 bg-sky-500/10 px-4 text-sm text-sky-400">
+        <div className="inline-flex h-9 items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 text-sm text-orange-400">
           <Search className="w-4 h-4" />
           Track Your Report Status
         </div>
         <h1 className="mt-6 bg-gradient-to-b from-white to-white/80 bg-clip-text text-4xl font-bold tracking-tight text-transparent">
           Track Your Report
-          <span className="block bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
+          <span className="block bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
             Stay Informed
           </span>
         </h1>
@@ -100,7 +115,7 @@ export function ReportTracker() {
                   onChange={(e) => setReportId(e.target.value)}
                   className="w-full px-4 py-3 bg-black/50 border border-white/5 rounded-xl
                            text-white placeholder-zinc-500 focus:outline-none focus:ring-2 
-                           focus:ring-sky-500/50 focus:border-transparent transition-all"
+                           focus:ring-orange-500/50 focus:border-transparent transition-all"
                   placeholder="Enter your report ID"
                   disabled={loading}
                 />
@@ -128,9 +143,8 @@ export function ReportTracker() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-sky-500 to-blue-600 
-                         text-white py-3 px-4 rounded-xl hover:from-sky-400 
-                         hover:to-blue-500 transition-all duration-200 
+                className="w-full bg-orange-500 text-white py-3 px-4 rounded-xl 
+                         hover:bg-orange-400 transition-all duration-200 
                          disabled:opacity-50 disabled:cursor-not-allowed
                          flex items-center justify-center space-x-2"
               >
@@ -156,7 +170,7 @@ export function ReportTracker() {
             {reportDetails && (
               <div className="rounded-xl border border-white/5 bg-black/30 backdrop-blur-xl p-6 h-full">
                 <h2 className="text-xl font-semibold text-white flex items-center gap-2 mb-6">
-                  <div className="h-2 w-2 rounded-full bg-sky-400" />
+                  <div className="h-2 w-2 rounded-full bg-orange-400" />
                   Report Details
                 </h2>
 

@@ -2,8 +2,30 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Report, ReportStatus, ReportType } from "@prisma/client";
 import { signOut } from "next-auth/react";
+
+// Define enums locally for client-side use
+const ReportStatusOptions = ["PENDING", "IN_PROGRESS", "RESOLVED", "DISMISSED"] as const;
+const ReportTypeOptions = ["EMERGENCY", "NON_EMERGENCY"] as const;
+
+type ReportStatus = typeof ReportStatusOptions[number];
+type ReportType = typeof ReportTypeOptions[number];
+
+interface Report {
+  id: string;
+  reportId: string;
+  type: ReportType;
+  title: string;
+  description: string;
+  reportType: string;
+  location: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  image: string | null;
+  status: ReportStatus;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
 
 export default function Dashboard() {
   const { data: session } = useSession();
@@ -109,7 +131,7 @@ export default function Dashboard() {
               className="bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
             >
               <option value="ALL">All Statuses</option>
-              {Object.values(ReportStatus).map((status) => (
+              {ReportStatusOptions.map((status) => (
                 <option key={status} value={status}>
                   {status}
                 </option>
@@ -124,7 +146,7 @@ export default function Dashboard() {
               className="bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
             >
               <option value="ALL">All Types</option>
-              {Object.values(ReportType).map((type) => (
+              {ReportTypeOptions.map((type) => (
                 <option key={type} value={type}>
                   {type}
                 </option>
@@ -198,7 +220,7 @@ export default function Dashboard() {
                   }
                   className="bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/20"
                 >
-                  {Object.values(ReportStatus).map((status) => (
+                  {ReportStatusOptions.map((status) => (
                     <option key={status} value={status}>
                       {status}
                     </option>
