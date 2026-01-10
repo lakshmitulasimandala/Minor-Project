@@ -165,6 +165,13 @@ export function ReportSubmitted({ data }: ReportSubmittedProps) {
         >
           Return to Home
         </button>
+
+        <button
+          onClick={() => (window.location.href = "/track-report")}
+          className="inline-flex items-center justify-center rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-400"
+        >
+          Track Your Report
+        </button>
       </div>
     </div>
   );
