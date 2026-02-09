@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { reportid: string } }
+  context: { params: Promise<{ reportId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -13,10 +13,10 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { reportid } = params; // ✅ this is Prisma `id`
+    const { reportId } = await context.params; // ✅ params is now async in Next.js 16
     const { status } = await request.json();
 
-    if (!reportid || !status) {
+    if (!reportId || !status) {
       return NextResponse.json(
         { error: "Report ID and status are required" },
         { status: 400 }
@@ -24,7 +24,7 @@ export async function PATCH(
     }
 
     const report = await prisma.report.update({
-      where: { id: reportid }, // ✅ CORRECT
+      where: { id: reportId },
       data: { status },
     });
 

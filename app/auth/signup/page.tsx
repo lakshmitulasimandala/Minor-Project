@@ -16,8 +16,6 @@ export default function SignUp() {
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  // 👁️ UI-only states (no logic impact)
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -72,7 +70,7 @@ export default function SignUp() {
             <input
               name="name"
               type="text"
-              placeholder="name"
+              placeholder="Name"
               required
               value={formData.name}
               onChange={handleChange}
@@ -82,8 +80,8 @@ export default function SignUp() {
             {/* Email */}
             <input
               name="email"
-              type="text"
-              placeholder="email"
+              type="email"
+              placeholder="Email"
               required
               value={formData.email}
               onChange={handleChange}
@@ -95,7 +93,7 @@ export default function SignUp() {
               <input
                 name="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="password"
+                placeholder="Password"
                 required
                 value={formData.password}
                 onChange={handleChange}
@@ -103,7 +101,7 @@ export default function SignUp() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-orange-400"
               >
                 {showPassword ? "🙈" : "👁️"}
@@ -115,7 +113,7 @@ export default function SignUp() {
               <input
                 name="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="confirm password"
+                placeholder="Confirm Password"
                 required
                 value={formData.confirmPassword}
                 onChange={handleChange}
@@ -123,7 +121,7 @@ export default function SignUp() {
               />
               <button
                 type="button"
-                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-orange-400"
               >
                 {showConfirmPassword ? "🙈" : "👁️"}
@@ -144,6 +142,7 @@ export default function SignUp() {
               {isLoading ? "Creating..." : "Sign up"}
             </button>
           </form>
+
 
           <p className="mt-6 text-center text-sm text-zinc-400">
             Already have an account?{" "}
