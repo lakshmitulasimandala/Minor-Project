@@ -38,29 +38,46 @@ export default function Dashboard() {
     fetchReports();
   }, []);
 
+  // ✅ SAFE FETCH (CRITICAL FIX)
   const fetchReports = async () => {
     setIsLoading(true);
     try {
       const res = await fetch("/api/reports");
       const data = await res.json();
+
+      // 🔥 Defensive check
+      if (!res.ok || !Array.isArray(data)) {
+        console.error("Reports API failed:", data);
+        setReports([]);
+        return;
+      }
+
       setReports(data);
     } catch (err) {
-      console.error(err);
+      console.error("Failed to fetch reports:", err);
+      setReports([]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const updateReportStatus = async (id: string, status: ReportStatus) => {
-    await fetch(`/api/reports/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    fetchReports();
+    try {
+      await fetch(`/api/reports/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      fetchReports();
+    } catch (err) {
+      console.error("Failed to update status:", err);
+    }
   };
 
-  const filteredReports = reports.filter((r) => {
+  // ✅ EXTRA SAFETY
+  const safeReports = Array.isArray(reports) ? reports : [];
+
+  const filteredReports = safeReports.filter((r) => {
     const s = filter === "ALL" || r.status === filter;
     const t = typeFilter === "ALL" || r.type === typeFilter;
     return s && t;

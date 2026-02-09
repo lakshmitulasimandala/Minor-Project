@@ -47,13 +47,15 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;       // ✅ ADD THIS
         token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session?.user) {
-        session.user.role = token.role;
+      if (session.user) {
+        session.user.id = token.id as string;   // ✅ ADD THIS
+        session.user.role = token.role as string;
       }
       return session;
     },
