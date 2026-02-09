@@ -58,6 +58,7 @@ export function ReportForm({ onComplete }: ReportFormProps) {
     description: "",
     title: "",
   });
+  const [aiFailed, setAiFailed] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [coordinates, setCoordinates] = useState<{
@@ -119,7 +120,7 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   if (!file) return;
 
   console.log("📁 File selected:", file.name, file.type, file.size);
-
+  setAiFailed(false);
   setIsAnalyzing(true);
 
   try {
@@ -178,10 +179,12 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
       console.warn("   Title present:", !!data.title);
       console.warn("   Type present:", !!data.reportType);
       console.warn("   Description present:", !!data.description);
+      setAiFailed(true); // for users to know ai failed and manual input is needed
     }
 
   } catch (error) {
     console.error("❌ Error during image analysis:", error);
+    setAiFailed(true);
     // Image is already set, so user can still continue manually
   } finally {
     setIsAnalyzing(false);
@@ -422,7 +425,12 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
           </div>
         )}
       </div>
-
+      {aiFailed && (
+        <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-4 text-sm text-orange-300">
+          ⚠️ Image analysis failed. Sometimes AI can make mistakes.  
+          Please enter the details manually.
+        </div>
+      )}
       {/* Specific Report Type */}
       <div>
         <label className="block text-sm font-medium text-zinc-400 mb-2">

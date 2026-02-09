@@ -21,7 +21,7 @@ export async function PATCH(
 
     const { status } = await request.json();
     const report = await prisma.report.update({
-      where: { reportId: reportId },
+      where: { id: reportId },
       data: { status },
     });
 
